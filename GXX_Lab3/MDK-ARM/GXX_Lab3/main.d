@@ -34,3 +34,4 @@ gxx_lab3\main.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr.h
 gxx_lab3\main.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr_ex.h
 gxx_lab3\main.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h
 gxx_lab3\main.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h
+gxx_lab3\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
