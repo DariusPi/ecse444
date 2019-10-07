@@ -12,17 +12,17 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_USART1_UART_Init(void);
 void Adc_config(void);
-void Sys_config(void);
 int UARTPrintString(UART_HandleTypeDef * def, char * string, int n);
-int flag;
+int volatile flag;
 
 int main(void)
 {
 	flag=0;
-	int temp;
+	int temp=0;
 	char adc[19] = {'T','e','m','p','e','r','a','t','u','r','e',' ','=',' ','0','0',' ','C','\n'};
 	uint16_t ADCValue = 0x00;
 	uint16_t MCUTemperatureDegrees = 0;
+	uint16_t deg=0;
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
@@ -32,12 +32,12 @@ int main(void)
   MX_GPIO_Init();
   MX_USART1_UART_Init();
 	Adc_config();
-	Sys_config();
 	
 	HAL_ADCEx_Calibration_Start(&hadc1, ADC_SINGLE_ENDED);
 	HAL_ADC_Start(&hadc1);
 	
   /* Infinite loop */
+	HAL_UART_Transmit(&huart1, (uint8_t *)&adc[0], 19, 30000);
 	while (1)
   {
 		//part 0
@@ -48,15 +48,15 @@ int main(void)
 		//HAL_Delay(100);
 		
 		if (flag==1){
-			flag=0;
 			HAL_ADC_PollForConversion(&hadc1, 100); //
 			ADCValue = HAL_ADC_GetValue(&hadc1);  /* Gets Temp */
 			
-			MCUTemperatureDegrees = __LL_ADC_CALC_TEMPERATURE(3300, ADCValue, LL_ADC_RESOLUTION_12B);
-			temp= MCUTemperatureDegrees;
-			adc[14]=(temp/10)+'0';
-			adc[15]=(temp%10)+'0';
+			adc[14]=((__LL_ADC_CALC_TEMPERATURE(3300, ADCValue, LL_ADC_RESOLUTION_12B))/10)+'0';
+			adc[15]=((__LL_ADC_CALC_TEMPERATURE(3300, ADCValue, LL_ADC_RESOLUTION_12B))%10)+'0';
+			
+			//HAL_UART_Transmit(&huart1, (uint8_t *)&adc[0], 19, 30000);
 			UARTPrintString(&huart1,&adc[0], 19);
+			flag=0;
 		}
   }
 }
@@ -64,19 +64,11 @@ int main(void)
 int UARTPrintString(UART_HandleTypeDef * def, char * string, int n){
 	int i; char * tmp= string;
 	for (i=0;i<n;i++){
-		HAL_Delay(10);
+		HAL_Delay(1);
 		def->Instance->TDR=*tmp;
 		tmp=tmp+1;
 	}
 	return 1;
-}
-
-void Sys_config(void){
-	HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-	
-	HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-	
-	HAL_NVIC_SetPriority(SysTick_IRQn, 0,0);
 }
 
 void Adc_config(void){
@@ -90,14 +82,14 @@ void Adc_config(void){
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE; //ADC_SCAN_DISABLE
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV; //ADC_EOC_SINGLE_CONV
   hadc1.Init.LowPowerAutoWait = DISABLE;
-  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.ContinuousConvMode = ENABLE;
   hadc1.Init.NbrOfConversion = 1;
   hadc1.Init.DiscontinuousConvMode = DISABLE;
-  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START; //
+  hadc1.Init.ExternalTrigConv = ADC_EXTERNALTRIG_T1_CC1; //ADC_SOFTWARE_START; //
   hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
   hadc1.Init.DMAContinuousRequests = DISABLE;
-  hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
-  hadc1.Init.OversamplingMode = DISABLE;
+  hadc1.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
+  hadc1.Init.OversamplingMode = DISABLE;			//
   if (HAL_ADC_Init(&hadc1) != HAL_OK)
   {
     Error_Handler();
@@ -114,12 +106,12 @@ void Adc_config(void){
   {
     Error_Handler();
   }
-		
+	
 	ADC_ChannelConfTypeDef adcChannel;
 	
 	adcChannel.Channel = ADC_CHANNEL_TEMPSENSOR;
 	adcChannel.Rank = 1;
-	adcChannel.SamplingTime= ADC_SAMPLETIME_24CYCLES_5; //maybe 640, 24
+	adcChannel.SamplingTime= ADC_SAMPLETIME_640CYCLES_5; //maybe 640, 24, ADC_SAMPLETIME_12CYCLES_5
 	adcChannel.SingleDiff = ADC_SINGLE_ENDED;
   adcChannel.OffsetNumber = ADC_OFFSET_NONE;
   adcChannel.Offset = 0;
@@ -192,7 +184,7 @@ void SystemClock_Config(void)
 
     /**Configure the Systick interrupt time 
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/80); //4M 
 
     /**Configure the Systick 
     */
