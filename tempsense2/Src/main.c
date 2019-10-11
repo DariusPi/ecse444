@@ -66,10 +66,10 @@ static void MX_USART1_UART_Init(void);
 
 /* USER CODE END PFP */
 
-/* Private user code ---------------------------------------------------------*/
-/* USER CODE BEGIN 0 */
-	char adc[19] = {'T','e','m','p','e','r','a','t','u','r','e',' ','=',' ','0','0',' ','C','\n'};
-/* USER CODE END 0 */
+char adc[19] = {'T','e','m','p','e','r','a','t','u','r','e',' ','=',' ','0','0',' ','C','\n'};
+char dma[30];
+int volatile flag;
+
 
 /**
   * @brief  The application entry point.
@@ -77,26 +77,18 @@ static void MX_USART1_UART_Init(void);
   */
 int main(void)
 {
-  /* USER CODE BEGIN 1 */
-	uint16_t ADCValue = 0x00;
-  /* USER CODE END 1 */
   
+	uint16_t ADCValue = 0x00;
+	flag=0;
+  int i=0;
 
   /* MCU Configuration--------------------------------------------------------*/
 
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 
-  /* USER CODE BEGIN Init */
-
-  /* USER CODE END Init */
-
   /* Configure the system clock */
   SystemClock_Config();
-
-  /* USER CODE BEGIN SysInit */
-
-  /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
@@ -112,16 +104,28 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    HAL_Delay(100);
+    //HAL_Delay(100);
+		//SysTick_Handler();
 		
-		HAL_ADC_PollForConversion(&hadc1, 100); //
-		ADCValue = HAL_ADC_GetValue(&hadc1);  /* Gets Temp */
-		
-		adc[14]=((__LL_ADC_CALC_TEMPERATURE(3300, ADCValue, LL_ADC_RESOLUTION_12B))/10)+'0';
-		adc[15]=((__LL_ADC_CALC_TEMPERATURE(3300, ADCValue, LL_ADC_RESOLUTION_12B))%10)+'0';
-		
-		HAL_UART_Transmit_DMA(&huart1, (uint8_t *)&adc[0], 19);
-		
+		while(i<10){
+			if (flag==1){
+			
+				HAL_ADC_PollForConversion(&hadc1, 100); //
+				ADCValue = HAL_ADC_GetValue(&hadc1);  /* Gets Temp */
+				
+				dma[i*3]=((__LL_ADC_CALC_TEMPERATURE(3300, ADCValue, LL_ADC_RESOLUTION_10B))/10)+'0';
+				dma[i*3+1]=((__LL_ADC_CALC_TEMPERATURE(3300, ADCValue, LL_ADC_RESOLUTION_10B))%10)+'0';
+				dma[i*3+2]='\n';
+				
+				/*adc[14]=((__LL_ADC_CALC_TEMPERATURE(3300, ADCValue, LL_ADC_RESOLUTION_10B))/10)+'0';
+				adc[15]=((__LL_ADC_CALC_TEMPERATURE(3300, ADCValue, LL_ADC_RESOLUTION_10B))%10)+'0';
+				HAL_UART_Transmit_DMA(&huart1, (uint8_t *)&adc[0], 19);*/
+				i++;
+				flag=0;
+			}
+		}
+		HAL_UART_Transmit_DMA(&huart1, (uint8_t *)&dma[0], 30);
+		i=0;
   }
   /* USER CODE END 3 */
 }
@@ -179,6 +183,17 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+	
+	/**Configure the Systick interrupt time 
+    */
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/100); //4M 
+
+    /**Configure the Systick 
+    */
+  HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
+
+  /* SysTick_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
 /**
@@ -203,7 +218,7 @@ static void MX_ADC1_Init(void)
   */
   hadc1.Instance = ADC1;
   hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
-  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.Resolution = ADC_RESOLUTION_10B;
   hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
   hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
   hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
