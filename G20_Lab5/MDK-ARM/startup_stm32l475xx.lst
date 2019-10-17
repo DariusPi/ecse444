@@ -679,8 +679,8 @@ ARM Macro Assembler    Page 11
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=g20_lab5\startup_stm32l475xx.d -og20_lab5\startup_stm32l475xx.o
- -I.\RTE\_G20_Lab5 -IC:\Users\murra\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMS
-IS\Core\Include -IC:\Users\murra\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.2
+ -I.\RTE\_G20_Lab5 -IC:\Users\dariu\AppData\Local\Arm\Packs\ARM\CMSIS\5.5.1\CMS
+IS\Core\Include -IC:\Users\dariu\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.2
 .0\Drivers\CMSIS\Device\ST\STM32L4xx\Include --predefine="__EVAL SETA 1" --pred
 efine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 528" --predefine=
 "_RTE_ SETA 1" --predefine="STM32L475xx SETA 1" --list=startup_stm32l475xx.lst 
