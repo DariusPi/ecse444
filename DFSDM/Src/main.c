@@ -48,16 +48,20 @@ DFSDM_Filter_HandleTypeDef hdfsdm1_filter0;
 DFSDM_Channel_HandleTypeDef hdfsdm1_channel2;
 DMA_HandleTypeDef hdma_dfsdm1_flt0;
 
+TIM_HandleTypeDef htim1;
+
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
-#define AUDIO_REC 1024
+#define SaturaLH(N, L, H) (((N)<(L))?(L):(((N)>(H))?(H):(N)))
+
+#define AUDIO_REC 512				//1024,2048
 int32_t RecBuf[AUDIO_REC];		//raw data has config bits
 int32_t PlayBuf[AUDIO_REC];
 
 uint8_t  DmaRecHalfBuffCplt  = 0;
 uint8_t  DmaRecBuffCplt = 0;
-int volatile flag;
+int volatile tim1flag;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -67,8 +71,9 @@ static void MX_DMA_Init(void);
 static void MX_DFSDM1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_DAC1_Init(void);
+static void MX_TIM1_Init(void);
 /* USER CODE BEGIN PFP */
-//static void HAL_DFSDM_FilterMspInit(DFSDM_Filter_HandleTypeDef *hdfsdm_filter);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -109,39 +114,56 @@ int main(void)
   MX_DFSDM1_Init();
   MX_USART1_UART_Init();
   MX_DAC1_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
+	
+	HAL_TIM_Base_Start_IT(&htim1);
 	
 	//HAL_DFSDM_FilterInit(&hdfsdm1_filter0);															//
 	HAL_DFSDM_FilterRegularStart_DMA(&hdfsdm1_filter0,RecBuf,AUDIO_REC);
 	HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
   HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+	
+	tim1flag=0;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    /*if (DmaRecHalfBuffCplt==1){
+    if (DmaRecHalfBuffCplt==1){
 			for (i=0;i<AUDIO_REC/2;i++){
-				PlayBuf[i]=RecBuf[i]>>8;
+				PlayBuf[i]     = SaturaLH((RecBuf[i] >> 8), -32768, 32767);
+				/*PlayBuf[i]=RecBuf[i]>>8;
+				PlayBuf[i]=PlayBuf[i]>>12;*/
 			}
 			DmaRecHalfBuffCplt=0;
-		}*/
+		}
 		
 		if (DmaRecBuffCplt==1){
-			for (i=0;i<AUDIO_REC;i++){
-				PlayBuf[i]=RecBuf[i]>>8;
-				HAL_Delay(200);
+			for (i=AUDIO_REC/2;i<AUDIO_REC;i++){
+				PlayBuf[i]     = SaturaLH((RecBuf[i] >> 8), -32768, 32767);
+				/*PlayBuf[i]=RecBuf[i]>>8;
+				PlayBuf[i]=PlayBuf[i]>>12;*/
+				/*while (!tim1flag);
 				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, PlayBuf[i]);	
 				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, PlayBuf[i]);
 				//HAL_UART_Transmit(&huart1, (uint8_t *)PlayBuf[i], 1, 30000);
-				//flag=0;
+				tim1flag=0;*/
+			}
+			for (i=0;i<AUDIO_REC;i++){
+				//HAL_Delay(200);
+				while (!tim1flag);
+				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, PlayBuf[i]);	
+				HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, PlayBuf[i]);
+				//HAL_UART_Transmit(&huart1, (uint8_t *)PlayBuf[i], 1, 30000);
+				tim1flag=0;
 			}
 			//HAL_Delay(100);
 			DmaRecBuffCplt=0;
 		}
 		//Systick_Handler()
-		/* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
   }
@@ -201,17 +223,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-	
-	/**Configure the Systick interrupt time 
-    */
-    HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
-
-    /**Configure the Systick 
-    */
-    HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
-
-    /* SysTick_IRQn interrupt configuration */
-    HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
 }
 
 /**
@@ -275,8 +286,8 @@ static void MX_DFSDM1_Init(void)
   hdfsdm1_filter0.Init.RegularParam.FastMode = ENABLE;
   hdfsdm1_filter0.Init.RegularParam.DmaMode = ENABLE;
   hdfsdm1_filter0.Init.FilterParam.SincOrder = DFSDM_FILTER_SINC3_ORDER;
-  hdfsdm1_filter0.Init.FilterParam.Oversampling = 125;
-  hdfsdm1_filter0.Init.FilterParam.IntOversampling = 1;
+  hdfsdm1_filter0.Init.FilterParam.Oversampling = 125;					//64,125,250
+  hdfsdm1_filter0.Init.FilterParam.IntOversampling = 1;					//10?
   if (HAL_DFSDM_FilterInit(&hdfsdm1_filter0) != HAL_OK)
   {
     Error_Handler();
@@ -291,9 +302,9 @@ static void MX_DFSDM1_Init(void)
   hdfsdm1_channel2.Init.SerialInterface.Type = DFSDM_CHANNEL_SPI_RISING;
   hdfsdm1_channel2.Init.SerialInterface.SpiClock = DFSDM_CHANNEL_SPI_CLOCK_INTERNAL;
   hdfsdm1_channel2.Init.Awd.FilterOrder = DFSDM_CHANNEL_FASTSINC_ORDER;
-  hdfsdm1_channel2.Init.Awd.Oversampling = 1;
-  hdfsdm1_channel2.Init.Offset = -1024;
-  hdfsdm1_channel2.Init.RightBitShift = 0x02;
+  hdfsdm1_channel2.Init.Awd.Oversampling = 1;								//10?
+  hdfsdm1_channel2.Init.Offset = -2048;											//-2048
+  hdfsdm1_channel2.Init.RightBitShift = 0x02;								//2
   if (HAL_DFSDM_ChannelInit(&hdfsdm1_channel2) != HAL_OK)
   {
     Error_Handler();
@@ -305,6 +316,66 @@ static void MX_DFSDM1_Init(void)
   /* USER CODE BEGIN DFSDM1_Init 2 */
 
   /* USER CODE END DFSDM1_Init 2 */
+
+}
+
+/**
+  * @brief TIM1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM1_Init(void)
+{
+
+  /* USER CODE BEGIN TIM1_Init 0 */
+
+  /* USER CODE END TIM1_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_IC_InitTypeDef sConfigIC = {0};
+
+  /* USER CODE BEGIN TIM1_Init 1 */
+
+  /* USER CODE END TIM1_Init 1 */
+  htim1.Instance = TIM1;
+  htim1.Init.Prescaler = 0;
+  htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim1.Init.Period = 5000;
+  htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim1.Init.RepetitionCounter = 0;
+  htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_IC_Init(&htim1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterOutputTrigger2 = TIM_TRGO2_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigIC.ICPolarity = TIM_INPUTCHANNELPOLARITY_RISING;
+  sConfigIC.ICSelection = TIM_ICSELECTION_DIRECTTI;
+  sConfigIC.ICPrescaler = TIM_ICPSC_DIV1;
+  sConfigIC.ICFilter = 0;
+  if (HAL_TIM_IC_ConfigChannel(&htim1, &sConfigIC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM1_Init 2 */
+
+  /* USER CODE END TIM1_Init 2 */
 
 }
 

@@ -32,5 +32,7 @@ dfsdm\stm32l4xx_hal_pwr_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_
 dfsdm\stm32l4xx_hal_pwr_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_i2c_ex.h
 dfsdm\stm32l4xx_hal_pwr_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr.h
 dfsdm\stm32l4xx_hal_pwr_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_pwr_ex.h
+dfsdm\stm32l4xx_hal_pwr_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim.h
+dfsdm\stm32l4xx_hal_pwr_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex.h
 dfsdm\stm32l4xx_hal_pwr_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h
 dfsdm\stm32l4xx_hal_pwr_ex.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h
