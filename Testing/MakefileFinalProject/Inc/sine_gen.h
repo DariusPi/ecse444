@@ -1,0 +1,17 @@
+#ifndef _SINE_GEN
+#define _SINE_GEN
+
+#include "arm_math.h"
+
+typedef struct {
+    float32_t amplitude;
+    float32_t freq;
+    uint32_t base_addr;
+} SineWave;
+
+int sine_gen_init(void);
+int sine_wave_gen(SineWave *sine);
+void play_sine_wave(SineWave *left, SineWave *right);
+int combine_sine_waves(SineWave *resultL, SineWave *resultR, SineWave wav1, SineWave wav2);
+
+#endif

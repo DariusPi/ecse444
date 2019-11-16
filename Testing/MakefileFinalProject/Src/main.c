@@ -20,14 +20,21 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
 
-#include <errno.h>
-#undef errno
-extern int errno;
+#include "stm32l475e_iot01.h"
+#include "stm32l475e_iot01_qspi.h"
+#include "arm_math.h"
+
+#include "sine_gen.h"
+
+// #include <errno.h>
+// #undef errno
+// extern int errno;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,8 +60,9 @@ TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart1;
 
+osThreadId playSoundTaskHandle;
 /* USER CODE BEGIN PV */
-
+int tim3flag = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -64,6 +72,8 @@ static void MX_DAC1_Init(void);
 static void MX_QUADSPI_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART1_UART_Init(void);
+void StartDefaultTask(void const * argument);
+
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -110,15 +120,92 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  HAL_DAC_Start(&hdac1, DAC1_CHANNEL_1);
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+  HAL_TIM_Base_Start_IT(&htim3);
+  
+  sine_gen_init();
+
+  SineWave wav1 = {
+    .amplitude = 0.9,
+		.freq = 440.0,
+		.base_addr = 0 * MX25R6435F_BLOCK_SIZE
+  };
+
+  sine_wave_gen(&wav1);
+  play_sine_wave(&wav1, &wav1);
+
+  SineWave wav2 = {
+    .amplitude = 0.9,
+    .freq = 261.23,
+    .base_addr = 4 * MX25R6435F_BLOCK_SIZE
+  };
+
+  SineWave wav3 = {
+    .amplitude = 0.9,
+    .freq = 392,
+    .base_addr = 8 * MX25R6435F_BLOCK_SIZE
+  };
+  
+  sine_wave_gen(&wav2);
+  sine_wave_gen(&wav3);
+
+  for (int i = 0; i < 5; i++) {
+    play_sine_wave(&wav2, &wav3);
+  }
+  
+  // play_sine_wave(&wav3);
+
+  // for (int i = 0; i < 32000; i++) {
+  //   BSP_QSPI_Read((uint8_t *) &x, 32000 * 4 + i * 4, 4);
+  //   printf("%d - %d\n", i, x);
+  // }
+  
+  // printf("Enter a word: ");
+  
+  // char buffer[100];
+  // scanf("%s", buffer);
+  // printf("You entered: %s\n", buffer);
 
   /* USER CODE END 2 */
 
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* definition and creation of playSoundTask */
+  osThreadDef(playSoundTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  playSoundTaskHandle = osThreadCreate(osThread(playSoundTask), NULL);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+  /* Start scheduler */
+  osKernelStart();
+  
+  /* We should never get here as control is now taken by the scheduler */
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  
   while (1)
   {
     /* USER CODE END WHILE */
-    printf("Hello World\n");
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -357,6 +444,45 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the playSoundTask thread.
+  * @param  argument: Not used 
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void const * argument)
+{
+  /* USER CODE BEGIN 5 */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END 5 */ 
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM17 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM17) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.
