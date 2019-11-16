@@ -708,19 +708,19 @@ ARM Macro Assembler    Page 11
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=gxx_project\startup_stm32l475xx.d -ogxx_project\startup_stm32l4
-75xx.o -I..\\Inc -I.\RTE\_GXX_Project -IC:\Users\murra\AppData\Local\Arm\Packs\
-ARM\CMSIS\5.6.0\CMSIS\Core\Include -IC:\Users\murra\AppData\Local\Arm\Packs\ARM
-\CMSIS\5.6.0\CMSIS\DSP\Include -IC:\Users\murra\AppData\Local\Arm\Packs\Keil\ST
-M32L4xx_DFP\2.2.0\Drivers\CMSIS\Device\ST\STM32L4xx\Include --predefine="__EVAL
- SETA 1" --predefine="__MICROLIB SETA 1" --predefine="__UVISION_VERSION SETA 52
+75xx.o -I..\\Inc -I.\RTE\_GXX_Project -I"C:\Users\Murray Kornelsen\AppData\Loca
+l\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include" -I"C:\Users\Murray Kornelsen\Ap
+pData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include" -I"C:\Users\Murray Kor
+nelsen\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.2.0\Drivers\CMSIS\Device\ST
+\STM32L4xx\Include" --predefine="__EVAL SETA 1" --predefine="__MICROLIB SETA 1"
 
 
 
 ARM Macro Assembler    Page 12 
 
 
-8" --predefine="_RTE_ SETA 1" --predefine="STM32L475xx SETA 1" --list=startup_s
-tm32l475xx.lst startup_stm32l475xx.s
+ --predefine="__UVISION_VERSION SETA 528" --predefine="_RTE_ SETA 1" --predefin
+e="STM32L475xx SETA 1" --list=startup_stm32l475xx.lst startup_stm32l475xx.s
 
 
 

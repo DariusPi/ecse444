@@ -1,0 +1,182 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.28.0.0
+Copyright (C) 2019 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Murray Kornelsen, McGill University, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.28.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 6 (build 750)
+Assembler:       Armasm.exe V5.06 update 6 (build 750)
+Linker/Locator:  ArmLink.exe V5.06 update 6 (build 750)
+Library Manager: ArmAr.exe V5.06 update 6 (build 750)
+Hex Converter:   FromElf.exe V5.06 update 6 (build 750)
+CPU DLL:         SARMCM3.DLL V5.28.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.6.0
+Dialog DLL:      TCM.DLL V1.36.2.0
+ 
+<h2>Project:</h2>
+C:\Users\Murray Kornelsen\Documents\ecse444\Testing\ECSE444FinalProject\MDK-ARM\ECSE444FinalProject.uvprojx
+Project File Date:  11/15/2019
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 6 (build 750)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Rebuild target 'ECSE444FinalProject'
+assembling startup_stm32l475xx.s...
+compiling stm32l4xx_hal_msp.c...
+compiling stm32l4xx_hal_timebase_tim.c...
+compiling freertos.c...
+compiling stm32l4xx_hal_dac.c...
+compiling main.c...
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(645): warning:  #47-D: incompatible redefinition of macro "__PKHBT"  (declared at line 852 of "../Drivers/CMSIS/Include/cmsis_armcc.h")
+    #define __PKHBT(ARG1, ARG2, ARG3) ( (((int32_t)(ARG1) <<    0) & (int32_t)0x0000FFFF) | \
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(647): warning:  #47-D: incompatible redefinition of macro "__PKHTB"  (declared at line 855 of "../Drivers/CMSIS/Include/cmsis_armcc.h")
+    #define __PKHTB(ARG1, ARG2, ARG3) ( (((int32_t)(ARG1) <<    0) & (int32_t)0xFFFF0000) | \
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1183): error:  #79: expected a type specifier
+    __STATIC_FORCEINLINE int32_t __SMMLA(
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1183): error:  #101: "int32_t" has already been declared in the current scope
+    __STATIC_FORCEINLINE int32_t __SMMLA(
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1183): error:  #141-D: unnamed prototyped parameters not allowed when body is present
+    __STATIC_FORCEINLINE int32_t __SMMLA(
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1188): error:  #20: identifier "sum" is undefined
+      return (sum + (int32_t) (((int64_t) x * y) >> 32));
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1188): error:  #20: identifier "x" is undefined
+      return (sum + (int32_t) (((int64_t) x * y) >> 32));
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1188): error:  #20: identifier "y" is undefined
+      return (sum + (int32_t) (((int64_t) x * y) >> 32));
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1801): error:  #757: function "int32_t"  is not a type name
+          int32_t shift,
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1816): error:  #757: function "int32_t"  is not a type name
+          int32_t shift,
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1914): error:  #757: function "int32_t"  is not a type name
+          int32_t resetStateFlag);
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1932): error:  #757: function "int32_t"  is not a type name
+          int32_t resetStateFlag);
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(1951): error:  #757: function "int32_t"  is not a type name
+          int32_t resetStateFlag);
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(4585): error:  #757: function "int32_t"  is not a type name
+            int32_t *pTapDelay;           /**< points to the array of delay values.  The array is of length numTaps. */
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(4598): error:  #757: function "int32_t"  is not a type name
+            int32_t *pTapDelay;           /**< points to the array of delay values.  The array is of length numTaps. */
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(4611): error:  #757: function "int32_t"  is not a type name
+            int32_t *pTapDelay;           /**< points to the array of delay values.  The array is of length numTaps. */
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(4624): error:  #757: function "int32_t"  is not a type name
+            int32_t *pTapDelay;           /**< points to the array of delay values.  The array is of length numTaps. */
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(4659): error:  #757: function "int32_t"  is not a type name
+          int32_t * pTapDelay,
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(4695): error:  #757: function "int32_t"  is not a type name
+          int32_t * pTapDelay,
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(4733): error:  #757: function "int32_t"  is not a type name
+          int32_t * pTapDelay,
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(4771): error:  #757: function "int32_t"  is not a type name
+          int32_t * pTapDelay,
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5544): warning:  #174-D: expression has no effect
+      int32_t i;                                   /* Index variable */
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5544): error:  #65: expected a ";"
+      int32_t i;                                   /* Index variable */
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5548): error:  #20: identifier "i" is undefined
+      i = (int32_t) ((x - S->x1) / xSpacing);
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5601): warning:  #174-D: expression has no effect
+      int32_t index;                               /* Index to read nearest output values */
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5601): error:  #65: expected a ";"
+      int32_t index;                               /* Index to read nearest output values */
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5606): error:  #20: identifier "index" is undefined
+      index = ((x & (q31_t)0xFFF00000) >> 20);
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5659): warning:  #174-D: expression has no effect
+      int32_t index;                               /* Index to read nearest output values */
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5659): error:  #65: expected a ";"
+      int32_t index;                               /* Index to read nearest output values */
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5664): error:  #20: identifier "index" is undefined
+      index = ((x & (int32_t)0xFFF00000) >> 20);
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5664): error:  #31: expression must have integral type
+      index = ((x & (int32_t)0xFFF00000) >> 20);
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5664): error:  #18: expected a ")"
+      index = ((x & (int32_t)0xFFF00000) >> 20);
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5940): error:  #757: function "int32_t"  is not a type name
+    int32_t * circBuffer,
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5941): error:  #757: function "int32_t"  is not a type name
+    int32_t L,
+C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include\arm_math.h(5943): error:  #757: function "int32_t"  is not a type name
+    int32_t bufferInc,
+../Src/main.c: 5 warnings, 30 errors
+compiling stm32l4xx_it.c...
+compiling stm32l4xx_hal_dac_ex.c...
+compiling stm32l4xx_hal_flash.c...
+compiling stm32l4xx_hal_rcc.c...
+compiling stm32l4xx_hal.c...
+compiling stm32l4xx_hal_i2c_ex.c...
+compiling stm32l4xx_hal_flash_ex.c...
+compiling stm32l4xx_hal_rcc_ex.c...
+compiling stm32l4xx_hal_i2c.c...
+compiling stm32l4xx_hal_cortex.c...
+compiling stm32l4xx_hal_gpio.c...
+compiling stm32l4xx_hal_dma_ex.c...
+compiling stm32l4xx_hal_flash_ramfunc.c...
+compiling stm32l4xx_hal_pwr.c...
+compiling stm32l4xx_hal_dma.c...
+compiling stm32l4xx_hal_pwr_ex.c...
+compiling stm32l4xx_hal_rng.c...
+compiling stm32l4xx_hal_qspi.c...
+compiling stm32l4xx_hal_uart.c...
+compiling croutine.c...
+compiling event_groups.c...
+compiling list.c...
+compiling stream_buffer.c...
+compiling queue.c...
+compiling timers.c...
+compiling tasks.c...
+compiling heap_4.c...
+compiling cmsis_os.c...
+compiling port.c...
+compiling stm32l4xx_hal_uart_ex.c...
+compiling stm32l4xx_hal_exti.c...
+compiling stm32l4xx_hal_tim_ex.c...
+compiling stm32l4xx_hal_tim.c...
+compiling system_stm32l4xx.c...
+compiling stm32l475e_iot01.c...
+compiling stm32l475e_iot01_gyro.c...
+compiling stm32l475e_iot01_magneto.c...
+compiling stm32l475e_iot01_accelero.c...
+compiling stm32l475e_iot01_psensor.c...
+compiling stm32l475e_iot01_hsensor.c...
+compiling stm32l475e_iot01_qspi.c...
+compiling stm32l475e_iot01_tsensor.c...
+"ECSE444FinalProject\ECSE444FinalProject.axf" - 30 Error(s), 5 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.6.0.pack
+                ARM.CMSIS.5.6.0
+                CMSIS (Cortex Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.3.0
+   * Component: DSP Variant: Library Version: 1.7.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32L4xx_DFP.2.2.0.pack
+                Keil.STM32L4xx_DFP.2.2.0
+                STMicroelectronics STM32L4 Series Device Support, Drivers and Examples
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_ECSE444FinalProject
+  C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\Core\Include
+  C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\ARM\CMSIS\5.6.0\CMSIS\DSP\Include
+  C:\Users\Murray Kornelsen\AppData\Local\Arm\Packs\Keil\STM32L4xx_DFP\2.2.0\Drivers\CMSIS\Device\ST\STM32L4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.3.0
+
+   * Component: ARM::CMSIS:DSP:Library:1.7.0
+      Include file:  CMSIS\DSP\Include\arm_math.h
+      Library file:  CMSIS\DSP\Lib\ARM\arm_cortexM4lf_math.lib
+Target not created.
+Build Time Elapsed:  00:00:45
+</pre>
+</body>
+</html>
