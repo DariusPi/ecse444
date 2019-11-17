@@ -24,7 +24,13 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
 
+#include "stm32l475e_iot01.h"
+#include "stm32l475e_iot01_qspi.h"
+#include "arm_math.h"
+
+#include "sine_gen.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -52,7 +58,7 @@ UART_HandleTypeDef huart1;
 
 osThreadId playSoundTaskHandle;
 /* USER CODE BEGIN PV */
-
+volatile int tim3flag = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -70,7 +76,32 @@ void StartDefaultTask(void const * argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+int fputc(int ch, FILE *f) {
+  while (HAL_OK != HAL_UART_Transmit(&huart1, (uint8_t *) &ch, 1, 30000));
+  return ch;
+}
 
+void centerDACValue() {
+  for (int i = 0; i < 2048; i++) {
+    while (tim3flag == 0);
+    HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, i);
+    HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, i);
+    tim3flag = 0;
+  }
+}
+
+void zeroDACValue() {
+  int sv1 = HAL_DAC_GetValue(&hdac1, DAC_CHANNEL_1);
+  int sv2 = HAL_DAC_GetValue(&hdac1, DAC_CHANNEL_2);
+  for (int i = 0; i < sv1 || i < sv2; i++) {
+    while (tim3flag == 0);
+    HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (sv1 - i ) > 0 ? sv1 - i : 0);
+    HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (sv2 - i) > 0 ? sv2 - i : 0);
+    tim3flag = 0;
+  }
+  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, 0);
+  HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, 0);
+}
 /* USER CODE END 0 */
 
 /**
@@ -106,6 +137,72 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+  HAL_TIM_Base_Start_IT(&htim3);
+  
+  // for (int i = 0; i < 2048; i++) {
+  //   while (tim3flag == 0);
+  //   HAL_DAC_SetValue(&hdac1, DAC1_CHANNEL_1, DAC_ALIGN_12B_R, i);
+  //   HAL_DAC_SetValue(&hdac1, DAC1_CHANNEL_2, DAC_ALIGN_12B_R, i);
+  // }
+
+  sine_gen_init();
+
+  SineWave wav1 = {
+    .amplitude = 0.9,
+		.freq = 440.0,
+		.base_addr = 0 * MX25R6435F_BLOCK_SIZE
+  };
+
+  sine_wave_gen(&wav1);
+  centerDACValue();
+  play_sine_wave(&wav1, &wav1);
+  zeroDACValue();
+  
+
+  SineWave wav2 = {
+    .amplitude = 0.9,
+    .freq = 261.23,
+    .base_addr = 4 * MX25R6435F_BLOCK_SIZE
+  };
+
+  SineWave wav3 = {
+    .amplitude = 0.9,
+    .freq = 392,
+    .base_addr = 8 * MX25R6435F_BLOCK_SIZE
+  };
+  
+  sine_wave_gen(&wav2);
+  sine_wave_gen(&wav3);
+  
+  // centerDACValue();
+  // for (int i = 0; i < 5; i++) {
+  //   play_sine_wave(&wav2, &wav3);
+  // }
+  // zeroDACValue();
+
+  SineWave mixL = {
+    .amplitude = 1,
+    .freq = 0,
+    .base_addr = 12 * MX25R6435F_BLOCK_SIZE
+  };
+
+  SineWave mixR = {
+    .amplitude = 1,
+    .freq = 0,
+    .base_addr = 16 * MX25R6435F_BLOCK_SIZE
+  };
+
+  // print_sine_wave(&wav2, &wav3);
+  combine_sine_waves(&mixL, &mixR, &wav2, &wav3);
+  // print_sine_wave(&mixL, &mixR);
+  centerDACValue();
+  for (int i = 0; i < 10; i++) {
+    play_sine_wave(&wav2, &wav3);
+    play_sine_wave(&mixL, &mixR);
+  }
+  zeroDACValue();
 
   /* USER CODE END 2 */
 
