@@ -12,6 +12,7 @@ typedef struct {
 int sine_gen_init(void);
 int sine_wave_gen(SineWave *sine);
 void play_sine_wave(SineWave *left, SineWave *right);
-int combine_sine_waves(SineWave *resultL, SineWave *resultR, SineWave wav1, SineWave wav2);
+void print_sine_wave(SineWave *left, SineWave *right);
+int combine_sine_waves(SineWave *resultL, SineWave *resultR, SineWave *wav1, SineWave *wav2);
 
 #endif
