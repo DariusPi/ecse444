@@ -20,9 +20,9 @@ TARGET = MakefileFinalProject
 # building variables
 ######################################
 # debug build?
-DEBUG = 1
+DEBUG = 0
 # optimization
-OPT = -Og
+OPT = -O0
 
 
 #######################################
@@ -38,6 +38,7 @@ BUILD_DIR = build
 C_SOURCES =  \
 Src/main.c \
 Src/sine_gen.c \
+Src/fast_ica.c \
 Src/stm32l4xx_it.c \
 Src/stm32l4xx_hal_msp.c \
 Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dac.c \
