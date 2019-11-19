@@ -6,22 +6,27 @@
 extern UART_HandleTypeDef huart1;
 extern int _write(int fd, char *ptr, int len);
 
-float id[4] = {1, 0, 0, 1};
-arm_matrix_instance_f32 idmat;
+// float id[4] = {1, 0, 0, 1};
+// arm_matrix_instance_f32 idmat;
 
-float lbuf[32000], rbuf[32000];
+#define MAX_ITERATIONS 1000
+#define EPSILON 0.0001
+// float lbuf[32000], rbuf[32000];
 
-void generateCovMat(float result[2][2], SineWave *centeredL, SineWave *centeredR) {
+void calculateWhite(SineWave *centeredL, SineWave *centeredR, float whitening[2][2]) {
+    
+}
+
+void generateCovMatrix(float result[2][2], SineWave *centeredL, SineWave *centeredR) {
     float l, r;
     for (int i = 0; i < SAMPLE_RATE * DURATION; i++) {
-        BSP_QSPI_Read((uint8_t *) &lbuf[i], centeredL->base_addr + i * 4, 4);
-        BSP_QSPI_Read((uint8_t *) &rbuf[i], centeredR->base_addr + i * 4, 4);
-    }
-    for (int i = 0; i < SAMPLE_RATE * DURATION; i++) {
-        result[0][0] += lbuf[i] * lbuf[i];
-        result[0][1] += rbuf[i] * lbuf[i];
-        result[1][0] += lbuf[i] * rbuf[i];
-        result[1][1] += rbuf[i] * rbuf[i];
+        BSP_QSPI_Read((uint8_t *) &l, centeredL->base_addr + i * 4, 4);
+        BSP_QSPI_Read((uint8_t *) &r, centeredR->base_addr + i * 4, 4);
+    
+        result[0][0] += l * l;
+        result[0][1] += r * l;
+        result[1][0] += l * r;
+        result[1][1] += r * r;
     }
 
     result[0][0] = result[0][0] / (SAMPLE_RATE * DURATION - 1);
@@ -30,7 +35,7 @@ void generateCovMat(float result[2][2], SineWave *centeredL, SineWave *centeredR
     result[1][1] = result[1][1] / (SAMPLE_RATE * DURATION - 1);
 }
 
-float generateCenteredWaves(SineWave *centeredL, SineWave *centeredR, float meanL, float meanR, SineWave *baseL, SineWave *baseR) {
+void generateCenteredWaves(SineWave *centeredL, SineWave *centeredR, float meanL, float meanR, SineWave *baseL, SineWave *baseR) {
     for (int i = 0; i < 2; i++) {
         BSP_QSPI_Erase_Block(centeredL->base_addr + i * MX25R6435F_BLOCK_SIZE);
         BSP_QSPI_Erase_Block(centeredR->base_addr + i * MX25R6435F_BLOCK_SIZE);
@@ -76,14 +81,27 @@ void eigen2by2(float eigval[2][2], float eigvec[2][2], float mat[2][2]) {
 
     eigvec[0][0] = -(a - eigval1) / b;
     eigvec[1][0] = 1;
+    float len;
+    arm_sqrt_f32(eigvec[0][0] * eigvec[0][0] + eigvec[1][0] * eigvec[1][0], &len);
+    eigvec[0][0] = eigvec[0][0] / len;
+    eigvec[1][0] = eigvec[1][0] / len;
+
     eigvec[0][1] = -(a - eigval2) / b;
     eigvec[1][1] = 1;
+    arm_sqrt_f32(eigvec[0][1] * eigvec[0][1] + eigvec[1][1] * eigvec[1][1], &len);
+    eigvec[0][1] = eigvec[0][1] / len;
+    eigvec[1][1] = eigvec[1][1] / len; 
 
     printf("eigenvectors:\n%f %f\n%f %f\n", eigvec[0][0], eigvec[0][1], eigvec[1][0], eigvec[1][1]);
 }
 
 int fast_ica(SineWave *resultL, SineWave *resultR, SineWave *mixedL, SineWave *mixedR) {
-    arm_mat_init_f32(&idmat, 2, 2, id);
+    // arm_mat_init_f32(&idmat, 2, 2, id);
+
+    for (int i = 0; i < 4; i++) {
+        BSP_QSPI_Erase_Block(resultL->base_addr + i * MX25R6435F_BLOCK_SIZE);
+        BSP_QSPI_Erase_Block(resultR->base_addr + i * MX25R6435F_BLOCK_SIZE);
+    }
 
     SineWave centeredL = {
         .amplitude = 1,
@@ -104,6 +122,8 @@ int fast_ica(SineWave *resultL, SineWave *resultR, SineWave *mixedL, SineWave *m
 
     generateCovMatrix(covmat, &centeredL, &centeredR);
 
+    printf("covmat:\n%f %f\n%f %f\n", covmat[0][0], covmat[0][1], covmat[1][0], covmat[1][1]);
+    
     float eigval[2][2];
     float eigvec[2][2];
 
@@ -120,6 +140,9 @@ int fast_ica(SineWave *resultL, SineWave *resultR, SineWave *mixedL, SineWave *m
     arm_sqrt_f32(eigval[0][0], &sqrtmat[0][0]);
     arm_sqrt_f32(eigval[1][1], &sqrtmat[1][1]);
 
-    float dewhitening[2][2] = {{eigvec[0][0] * sqrtmat[0][0], eigvec[0][1] * sqrt[1][1]},
-                               {eigvec[1][0] * sqrtmat[1][1], eigvec[1][1] * sqrt[1][1]}};
+    float dewhitening[2][2] = {{eigvec[0][0] * sqrtmat[0][0], eigvec[0][1] * sqrtmat[1][1]},
+                               {eigvec[1][0] * sqrtmat[1][1], eigvec[1][1] * sqrtmat[1][1]}};
+
+
+    return 0;
 }

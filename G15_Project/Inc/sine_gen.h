@@ -3,6 +3,10 @@
 
 #include "arm_math.h"
 
+#define SAMPLE_RATE 16000
+#define DURATION 2
+#define AMPLITUDE_MAX 1200
+
 typedef struct {
     float32_t amplitude;
     float32_t freq;

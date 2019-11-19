@@ -81,6 +81,12 @@ int fputc(int ch, FILE *f) {
   return ch;
 }
 
+int fgetc(FILE *f) {
+  uint8_t ch = 0;
+  while (HAL_OK != HAL_UART_Receive(&huart1, (uint8_t *)&ch, 1, 30000));
+  return ch;
+}
+
 void centerDACValue() {
   for (int i = 0; i < 2048; i++) {
     while (tim3flag == 0);
@@ -138,71 +144,76 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
-  HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
-  HAL_TIM_Base_Start_IT(&htim3);
-  
-  // for (int i = 0; i < 2048; i++) {
-  //   while (tim3flag == 0);
-  //   HAL_DAC_SetValue(&hdac1, DAC1_CHANNEL_1, DAC_ALIGN_12B_R, i);
-  //   HAL_DAC_SetValue(&hdac1, DAC1_CHANNEL_2, DAC_ALIGN_12B_R, i);
-  // }
+    HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
+    HAL_TIM_Base_Start_IT(&htim3);
 
-  sine_gen_init();
+    SineWave wav1 = {
+        .amplitude = 0.9,
+        .freq = 440.0,
+        .base_addr = 0 * MX25R6435F_BLOCK_SIZE};
 
-  SineWave wav1 = {
-    .amplitude = 0.9,
-		.freq = 440.0,
-		.base_addr = 0 * MX25R6435F_BLOCK_SIZE
-  };
+    SineWave wav2 = {
+        .amplitude = 0.9,
+        .freq = 261.23,
+        .base_addr = 4 * MX25R6435F_BLOCK_SIZE};
 
-  sine_wave_gen(&wav1);
-  centerDACValue();
-  play_sine_wave(&wav1, &wav1);
-  zeroDACValue();
-  
+    SineWave wav3 = {
+        .amplitude = 0.9,
+        .freq = 392,
+        .base_addr = 8 * MX25R6435F_BLOCK_SIZE};
 
-  SineWave wav2 = {
-    .amplitude = 0.9,
-    .freq = 261.23,
-    .base_addr = 4 * MX25R6435F_BLOCK_SIZE
-  };
+    SineWave mixL = {
+        .amplitude = 1,
+        .freq = 0,
+        .base_addr = 12 * MX25R6435F_BLOCK_SIZE};
 
-  SineWave wav3 = {
-    .amplitude = 0.9,
-    .freq = 392,
-    .base_addr = 8 * MX25R6435F_BLOCK_SIZE
-  };
-  
-  sine_wave_gen(&wav2);
-  sine_wave_gen(&wav3);
-  
-  // centerDACValue();
-  // for (int i = 0; i < 5; i++) {
-  //   play_sine_wave(&wav2, &wav3);
-  // }
-  // zeroDACValue();
+    SineWave mixR = {
+        .amplitude = 1,
+        .freq = 0,
+        .base_addr = 16 * MX25R6435F_BLOCK_SIZE};
 
-  SineWave mixL = {
-    .amplitude = 1,
-    .freq = 0,
-    .base_addr = 12 * MX25R6435F_BLOCK_SIZE
-  };
+    SineWave unmixL = {
+        .amplitude = 1,
+        .freq = 0,
+        .base_addr = 24 * MX25R6435F_BLOCK_SIZE};
 
-  SineWave mixR = {
-    .amplitude = 1,
-    .freq = 0,
-    .base_addr = 16 * MX25R6435F_BLOCK_SIZE
-  };
+    SineWave unmixR = {
+        .amplitude = 1,
+        .freq = 0,
+        .base_addr = 28 * MX25R6435F_BLOCK_SIZE};
 
-  // print_sine_wave(&wav2, &wav3);
-  combine_sine_waves(&mixL, &mixR, &wav2, &wav3);
-  // print_sine_wave(&mixL, &mixR);
-  centerDACValue();
-  for (int i = 0; i < 10; i++) {
-    play_sine_wave(&wav2, &wav3);
-    play_sine_wave(&mixL, &mixR);
-  }
-  zeroDACValue();
+    sine_gen_init();
+
+    sine_wave_gen(&wav1);
+    centerDACValue();
+    play_sine_wave(&wav1, &wav1);
+    zeroDACValue();
+
+    float freqInput;
+    printf("Enter freq 1\n");
+    scanf("%f", &freqInput);
+    printf("You entered %f\n", freqInput);
+    wav2.freq = freqInput;
+
+    printf("Enter freq 2\n");
+    scanf("%f", &freqInput);
+    printf("You entered %f\n", freqInput);
+    wav3.freq = freqInput;
+
+    sine_wave_gen(&wav2);
+    sine_wave_gen(&wav3);
+
+    combine_sine_waves(&mixL, &mixR, &wav2, &wav3);
+    centerDACValue();
+    for (int i = 0; i < 10; i++) {
+        play_sine_wave(&wav2, &wav2);
+        play_sine_wave(&wav3, &wav3);
+        play_sine_wave(&mixL, &mixL);
+        play_sine_wave(&mixR, &mixR);
+    }
+    zeroDACValue();
+
+    //fast_ica(&unmixL, &unmixR, &mixL, &mixR);
 
   /* USER CODE END 2 */
 

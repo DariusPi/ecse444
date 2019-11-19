@@ -3,10 +3,6 @@
 #include <stdio.h>
 #include "sine_gen.h"
 
-#define SAMPLE_RATE 16000
-#define DURATION 2
-#define AMPLITUDE_MAX 1200
-
 extern TIM_HandleTypeDef htim3;
 extern DAC_HandleTypeDef hdac1;
 

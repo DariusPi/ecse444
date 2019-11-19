@@ -81,9 +81,13 @@ void StartDefaultTask(void const *argument);
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 int _write(int fd, char *ptr, int len) {
-    while (HAL_OK != HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, HAL_UART_TIMEOUT_VALUE))
-        ;
+    while (HAL_OK != HAL_UART_Transmit(&huart1, (uint8_t *)ptr, len, HAL_UART_TIMEOUT_VALUE));
     return (len);
+}
+
+int _read(int fd, char *ptr, int len) {
+    while (HAL_OK != HAL_UART_Receive(&huart1, (uint8_t *) ptr, 1, HAL_UART_TIMEOUT_VALUE));
+    return 1;
 }
 
 void centerDACValue() {
@@ -100,8 +104,7 @@ void zeroDACValue() {
     int sv1 = HAL_DAC_GetValue(&hdac1, DAC_CHANNEL_1);
     int sv2 = HAL_DAC_GetValue(&hdac1, DAC_CHANNEL_2);
     for (int i = 0; i < sv1 || i < sv2; i++) {
-        while (tim3flag == 0)
-            ;
+        while (tim3flag == 0);
         HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (sv1 - i) > 0 ? sv1 - i : 0);
         HAL_DAC_SetValue(&hdac1, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (sv2 - i) > 0 ? sv2 - i : 0);
         tim3flag = 0;
@@ -146,12 +149,6 @@ int main(void) {
     HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
     HAL_TIM_Base_Start_IT(&htim3);
 
-    // for (int i = 0; i < 2048; i++) {
-    //   while (tim3flag == 0);
-    //   HAL_DAC_SetValue(&hdac1, DAC1_CHANNEL_1, DAC_ALIGN_12B_R, i);
-    //   HAL_DAC_SetValue(&hdac1, DAC1_CHANNEL_2, DAC_ALIGN_12B_R, i);
-    // }
-
     SineWave wav1 = {
         .amplitude = 0.9,
         .freq = 440.0,
@@ -177,6 +174,16 @@ int main(void) {
         .freq = 0,
         .base_addr = 16 * MX25R6435F_BLOCK_SIZE};
 
+    SineWave unmixL = {
+        .amplitude = 1,
+        .freq = 0,
+        .base_addr = 24 * MX25R6435F_BLOCK_SIZE};
+
+    SineWave unmixR = {
+        .amplitude = 1,
+        .freq = 0,
+        .base_addr = 28 * MX25R6435F_BLOCK_SIZE};
+
     sine_gen_init();
 
     sine_wave_gen(&wav1);
@@ -184,35 +191,31 @@ int main(void) {
     play_sine_wave(&wav1, &wav1);
     zeroDACValue();
 
+    float freqInput;
+    printf("Enter freq 1\n");
+    scanf("%f", &freqInput);
+    printf("You entered %f\n", freqInput);
+    wav2.freq = freqInput;
+
+    printf("Enter freq 2\n");
+    scanf("%f", &freqInput);
+    printf("You entered %f\n", freqInput);
+    wav3.freq = freqInput;
+
     sine_wave_gen(&wav2);
     sine_wave_gen(&wav3);
 
-    // centerDACValue();
-    // for (int i = 0; i < 5; i++) {
-    //   play_sine_wave(&wav2, &wav3);
-    // }
-    // zeroDACValue();
-
-    // print_sine_wave(&wav2, &wav3);
     combine_sine_waves(&mixL, &mixR, &wav2, &wav3);
-    // print_sine_wave(&mixL, &mixR);
     centerDACValue();
     for (int i = 0; i < 10; i++) {
-        play_sine_wave(&wav2, &wav3);
-        play_sine_wave(&mixL, &mixR);
+        play_sine_wave(&wav2, &wav2);
+        play_sine_wave(&wav3, &wav3);
+        play_sine_wave(&mixL, &mixL);
+        play_sine_wave(&mixR, &mixR);
     }
     zeroDACValue();
 
-    // for (int i = 0; i < 32000; i++) {
-    //   BSP_QSPI_Read((uint8_t *) &x, 32000 * 4 + i * 4, 4);
-    //   printf("%d - %d\n", i, x);
-    // }
-
-    // printf("Enter a word: ");
-
-    // char buffer[100];
-    // scanf("%s", buffer);
-    // printf("You entered: %s\n", buffer);
+    fast_ica(&unmixL, &unmixR, &mixL, &mixR);
 
     /* USER CODE END 2 */
 
