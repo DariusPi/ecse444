@@ -207,7 +207,8 @@ int main(void) {
 
     combine_sine_waves(&mixL, &mixR, &wav2, &wav3);
     centerDACValue();
-    for (int i = 0; i < 10; i++) {
+    // for (int i = 0; i < 10; i++) {
+    while (1) {
         play_sine_wave(&wav2, &wav2);
         play_sine_wave(&wav3, &wav3);
         play_sine_wave(&mixL, &mixL);

@@ -5,7 +5,7 @@
 
 #define SAMPLE_RATE 16000
 #define DURATION 2
-#define AMPLITUDE_MAX 1200
+#define AMPLITUDE_MAX 75
 
 typedef struct {
     float32_t amplitude;
