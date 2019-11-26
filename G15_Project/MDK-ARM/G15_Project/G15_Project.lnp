@@ -6,6 +6,7 @@
 "g15_project\stm32l4xx_hal_msp.o"
 "g15_project\stm32l4xx_hal_timebase_tim.o"
 "g15_project\sine_gen.o"
+"g15_project\fast_ica.o"
 "g15_project\stm32l4xx_hal_dac.o"
 "g15_project\stm32l4xx_hal_dac_ex.o"
 "g15_project\stm32l4xx_hal.o"

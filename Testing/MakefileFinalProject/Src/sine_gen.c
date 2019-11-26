@@ -15,6 +15,14 @@ const float mix_matrix[2][2] = {
     {0.5, 0.5},
     {0.2, 0.8}};
 
+uint32_t get_base_address(void) {
+    static int wavecount = 0;
+    uint32_t res = wavecount * 4 * MX25R6435F_BLOCK_SIZE;
+    printf("Granted address %lu\n", res);
+    wavecount++;
+    return res;
+}
+
 int sine_gen_init(void) {
     if (BSP_QSPI_Init() == QSPI_OK) {
         printf("QSPI init success!\n");
@@ -73,7 +81,8 @@ void play_sine_wave(SineWave *left, SineWave *right) {
 void print_sine_wave(SineWave *left, SineWave *right) {
     float lf, rf;
     int l, r;
-    for (int i = 0; i < SAMPLE_RATE * DURATION; i++) {
+    printf("Base address: %lu - %lu\n", left->base_addr, right->base_addr);
+    for (int i = 0; i < 150; i++) {
         // while (tim3flag == 0);
         BSP_QSPI_Read((uint8_t *)&lf, left->base_addr + i * 4, 4);
         BSP_QSPI_Read((uint8_t *)&rf, left->base_addr + i * 4, 4);

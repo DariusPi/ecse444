@@ -1,4 +1,14 @@
 g15_project\sine_gen.o: ..\Src\sine_gen.c
+g15_project\sine_gen.o: ../Inc/sine_gen.h
+g15_project\sine_gen.o: ..\Drivers\CMSIS\DSP\Include\arm_math.h
+g15_project\sine_gen.o: ../Drivers/CMSIS/Include/core_cm4.h
+g15_project\sine_gen.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+g15_project\sine_gen.o: ../Drivers/CMSIS/Include/cmsis_version.h
+g15_project\sine_gen.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
+g15_project\sine_gen.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
+g15_project\sine_gen.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+g15_project\sine_gen.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+g15_project\sine_gen.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
 g15_project\sine_gen.o: ..\Drivers\B-L475E-IOT01\stm32l475e_iot01_qspi.h
 g15_project\sine_gen.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h
 g15_project\sine_gen.o: ../Inc/stm32l4xx_hal_conf.h
@@ -7,10 +17,6 @@ g15_project\sine_gen.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_def.h
 g15_project\sine_gen.o: ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l4xx.h
 g15_project\sine_gen.o: ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/stm32l475xx.h
 g15_project\sine_gen.o: ../Drivers/CMSIS/Include/core_cm4.h
-g15_project\sine_gen.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
-g15_project\sine_gen.o: ../Drivers/CMSIS/Include/cmsis_version.h
-g15_project\sine_gen.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
-g15_project\sine_gen.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
 g15_project\sine_gen.o: ../Drivers/CMSIS/Include/mpu_armv7.h
 g15_project\sine_gen.o: ../Drivers/CMSIS/Device/ST/STM32L4xx/Include/system_stm32l4xx.h
 g15_project\sine_gen.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal.h
@@ -38,9 +44,3 @@ g15_project\sine_gen.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_tim_ex
 g15_project\sine_gen.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart.h
 g15_project\sine_gen.o: ../Drivers/STM32L4xx_HAL_Driver/Inc/stm32l4xx_hal_uart_ex.h
 g15_project\sine_gen.o: ..\Drivers\B-L475E-IOT01\../Components/mx25r6435f/mx25r6435f.h
-g15_project\sine_gen.o: ..\Drivers\CMSIS\DSP\Include\arm_math.h
-g15_project\sine_gen.o: ../Drivers/CMSIS/Include/core_cm4.h
-g15_project\sine_gen.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
-g15_project\sine_gen.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
-g15_project\sine_gen.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-g15_project\sine_gen.o: ../Inc/sine_gen.h

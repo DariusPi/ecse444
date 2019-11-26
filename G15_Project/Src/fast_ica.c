@@ -12,7 +12,7 @@ extern int _write(int fd, char *ptr, int len);
 // arm_matrix_instance_f32 idmat;
 
 #define MAX_ITERATIONS 1000
-#define EPSILON 0.0001
+#define EPSILON 0.0001f
 // float lbuf[32000], rbuf[32000];
 
 void applyFilter(SineWave *resultL, SineWave *resultR, SineWave *inputL, SineWave *inputR, float ica_filter[2][2]) {

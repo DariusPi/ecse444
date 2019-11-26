@@ -20,7 +20,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
-#include "cmsis_os.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -31,6 +30,7 @@
 #include "arm_math.h"
 
 #include "sine_gen.h"
+#include "fast_ica.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -56,7 +56,6 @@ TIM_HandleTypeDef htim3;
 
 UART_HandleTypeDef huart1;
 
-osThreadId playSoundTaskHandle;
 /* USER CODE BEGIN PV */
 volatile int tim3flag = 0;
 /* USER CODE END PV */
@@ -68,8 +67,6 @@ static void MX_DAC1_Init(void);
 static void MX_QUADSPI_Init(void);
 static void MX_TIM3_Init(void);
 static void MX_USART1_UART_Init(void);
-void StartDefaultTask(void const * argument);
-
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -143,44 +140,29 @@ int main(void)
   MX_TIM3_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
+		HAL_DAC_Start(&hdac1, DAC_CHANNEL_1);
     HAL_DAC_Start(&hdac1, DAC_CHANNEL_2);
     HAL_TIM_Base_Start_IT(&htim3);
 
-    SineWave wav1 = {
-        .amplitude = 0.9,
-        .freq = 440.0,
-        .base_addr = 0 * MX25R6435F_BLOCK_SIZE};
+    // uint32_t rand;
+    // for (int i = 0; i < 20; i++) {
+    //     HAL_RNG_GenerateRandomNumber(&hrng, &rand);
+    //     printf("%lu\n", rand);
+    // }
 
-    SineWave wav2 = {
-        .amplitude = 0.9,
-        .freq = 261.23,
-        .base_addr = 4 * MX25R6435F_BLOCK_SIZE};
+    SineWave wav1 = {.amplitude = 0.9, .freq = 440.0, .base_addr = get_base_address()};
 
-    SineWave wav3 = {
-        .amplitude = 0.9,
-        .freq = 392,
-        .base_addr = 8 * MX25R6435F_BLOCK_SIZE};
+    SineWave wav2 = {.amplitude = 0.9, .freq = 261.23, .base_addr = get_base_address()};
 
-    SineWave mixL = {
-        .amplitude = 1,
-        .freq = 0,
-        .base_addr = 12 * MX25R6435F_BLOCK_SIZE};
+    SineWave wav3 = {.amplitude = 0.9, .freq = 392, .base_addr = get_base_address()};
 
-    SineWave mixR = {
-        .amplitude = 1,
-        .freq = 0,
-        .base_addr = 16 * MX25R6435F_BLOCK_SIZE};
+    SineWave mixL = {.amplitude = 1, .freq = 0, .base_addr = get_base_address()};
 
-    SineWave unmixL = {
-        .amplitude = 1,
-        .freq = 0,
-        .base_addr = 24 * MX25R6435F_BLOCK_SIZE};
+    SineWave mixR = {.amplitude = 1, .freq = 0, .base_addr = get_base_address()};
 
-    SineWave unmixR = {
-        .amplitude = 1,
-        .freq = 0,
-        .base_addr = 28 * MX25R6435F_BLOCK_SIZE};
+    SineWave unmixL = {.amplitude = 1, .freq = 0, .base_addr = get_base_address()};
+
+    SineWave unmixR = {.amplitude = 1, .freq = 0, .base_addr = get_base_address()};
 
     sine_gen_init();
 
@@ -203,49 +185,40 @@ int main(void)
     sine_wave_gen(&wav2);
     sine_wave_gen(&wav3);
 
+    // print_sine_wave(&wav2, &wav3);
+    // print_sine_wave(&mixL, &mixR);
+
     combine_sine_waves(&mixL, &mixR, &wav2, &wav3);
+    
     centerDACValue();
-    for (int i = 0; i < 10; i++) {
+    play_sine_wave(&wav2, &wav2);
+    play_sine_wave(&wav3, &wav3);
+    play_sine_wave(&mixL, &mixL);
+    play_sine_wave(&mixR, &mixR);
+    zeroDACValue();
+
+    // print_sine_wave(&wav2, &wav3);
+    // print_sine_wave(&mixL, &mixR);
+
+    // for (int i = 0; i < 10; i++) {
+    fast_ica(&unmixL, &unmixR, &mixL, &mixR);
+
+    // print_sine_wave(&wav2, &wav3);
+    // print_sine_wave(&mixL, &mixR);
+    centerDACValue();
+    while (1) {
         play_sine_wave(&wav2, &wav2);
         play_sine_wave(&wav3, &wav3);
         play_sine_wave(&mixL, &mixL);
         play_sine_wave(&mixR, &mixR);
+        play_sine_wave(&unmixL, &unmixL);
+        play_sine_wave(&unmixR, &unmixR);
     }
     zeroDACValue();
 
     //fast_ica(&unmixL, &unmixR, &mixL, &mixR);
 
   /* USER CODE END 2 */
-
-  /* USER CODE BEGIN RTOS_MUTEX */
-  /* add mutexes, ... */
-  /* USER CODE END RTOS_MUTEX */
-
-  /* USER CODE BEGIN RTOS_SEMAPHORES */
-  /* add semaphores, ... */
-  /* USER CODE END RTOS_SEMAPHORES */
-
-  /* USER CODE BEGIN RTOS_TIMERS */
-  /* start timers, add new ones, ... */
-  /* USER CODE END RTOS_TIMERS */
-
-  /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
-  /* USER CODE END RTOS_QUEUES */
-
-  /* Create the thread(s) */
-  /* definition and creation of playSoundTask */
-  osThreadDef(playSoundTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  playSoundTaskHandle = osThreadCreate(osThread(playSoundTask), NULL);
-
-  /* USER CODE BEGIN RTOS_THREADS */
-  /* add threads, ... */
-  /* USER CODE END RTOS_THREADS */
-
-  /* Start scheduler */
-  osKernelStart();
-  
-  /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
@@ -491,24 +464,6 @@ static void MX_GPIO_Init(void)
 /* USER CODE BEGIN 4 */
 
 /* USER CODE END 4 */
-
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the playSoundTask thread.
-  * @param  argument: Not used 
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
-{
-  /* USER CODE BEGIN 5 */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END 5 */ 
-}
 
 /**
   * @brief  Period elapsed callback in non blocking mode

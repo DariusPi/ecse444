@@ -60,3 +60,4 @@ g15_project\main.o: ../Drivers/CMSIS/Include/core_cm4.h
 g15_project\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 g15_project\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 g15_project\main.o: ../Inc/sine_gen.h
+g15_project\main.o: ../Inc/fast_ica.h

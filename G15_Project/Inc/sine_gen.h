@@ -5,7 +5,7 @@
 
 #define SAMPLE_RATE 16000
 #define DURATION 2
-#define AMPLITUDE_MAX 75
+#define AMPLITUDE_MAX 1200
 
 typedef struct {
     float32_t amplitude;
@@ -13,6 +13,7 @@ typedef struct {
     uint32_t base_addr;
 } SineWave;
 
+uint32_t get_base_address(void);
 int sine_gen_init(void);
 int sine_wave_gen(SineWave *sine);
 void play_sine_wave(SineWave *left, SineWave *right);
