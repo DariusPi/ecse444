@@ -221,6 +221,10 @@ int main(void) {
         play_sine_wave(&mixR, &mixR);
         play_sine_wave(&unmixL, &unmixL);
         play_sine_wave(&unmixR, &unmixR);
+        for (int i = 0; i < 16000; i++) {
+            while (tim3flag == 0);
+            tim3flag = 0;
+        }
     }
     zeroDACValue();
 

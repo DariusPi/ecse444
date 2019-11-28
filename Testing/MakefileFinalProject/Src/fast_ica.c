@@ -215,9 +215,9 @@ int fast_ica(SineWave *resultL, SineWave *resultR, SineWave *mixedL, SineWave *m
     whitening[1][0] = invsqrtmat[1][1] * eigvec[1][0];
     whitening[1][1] = invsqrtmat[1][1] * eigvec[1][1];
 
-    float sqrtmat[2][2] = {{0, 0}, {0, 0}};
-    arm_sqrt_f32(eigval[0][0], &sqrtmat[0][0]);
-    arm_sqrt_f32(eigval[1][1], &sqrtmat[1][1]);
+    // float sqrtmat[2][2] = {{0, 0}, {0, 0}};
+    // arm_sqrt_f32(eigval[0][0], &sqrtmat[0][0]);
+    // arm_sqrt_f32(eigval[1][1], &sqrtmat[1][1]);
 
     // float dewhitening[2][2] = {{eigvec[0][0] * sqrtmat[0][0], eigvec[0][1] * sqrtmat[1][1]}, {eigvec[1][0] * sqrtmat[1][1], eigvec[1][1] * sqrtmat[1][1]}};
     // float dewhitening[2][2];
